@@ -2,6 +2,18 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.5.0-beta (2026-10-27)
+
+### Added
+- A fourth tab, **Shields**, with all 19 shields that the Forge of Potential can upgrade, from the Wood Shield to the Nord Greatshield. Shields use Protection idols, like armor. Their normal maximum is Q3.
+- The three Nord shields include the 5 Liquid Frost per craft for the Frost Foundry, marked "(no refund)".
+
+### Checked
+- All presets, old and new, were compared with the Valheim 1.0.20 game data: every cost and every normal maximum level matches.
+
+### Unchanged
+- The calculation rules and results are the same as in 0.4.0-beta: every earlier preset gives exactly the same table as before.
+
 ## 0.4.0-beta (2026-10-27)
 
 ### Changed
