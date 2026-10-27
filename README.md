@@ -59,7 +59,7 @@ python3 -m http.server 8000
 
 ## Add or correct an item
 
-Add an entry to `ITEMS` in `js/items.js`:
+The presets cover all 227 items that the Forge of Potential can upgrade in Valheim 1.0.20. To correct one, or to add an item from a later game version, edit its entry in `ITEMS` in `js/items.js`:
 
 ```js
 { type: "Weapons", name: "Spinesnap", station: "Black Forge", idol: "Black Marble Battle Idol", maxq: 4,
@@ -68,10 +68,11 @@ Add an entry to `ITEMS` in `js/items.js`:
 
 - `type`: the tab the item is listed under: `Weapons`, `Armor`, `Shields` or `Tools`.
 - `idol`: the item's Forge of Potential idol. The biome group in the list (Meadows, Black Forest, … Deep North) comes from the idol's tier, so it needs no field of its own.
-
 - `costs`: one ingredient per line, then the amounts for Q1/Q2/Q3/Q4 as on the item's wiki page. Use `-` for none.
 - Add `(no refund)` after an ingredient the game never returns on a break, for example `Liquid Frost: 5/-/-/- (no refund)`.
+- For an item made from another item (for example the Frostfire Sword from a Nord Sword), list the base item's materials as extra Q1 lines marked `(no refund)`. A material may appear on two lines; both use the same stock.
 - `maxq`: the highest level the crafting station can reach.
+- `note` (optional): text shown under the item list.
 
 Any other item can also be entered on the page directly with "Enter the costs of another item".
 

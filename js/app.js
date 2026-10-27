@@ -21,10 +21,11 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 const slug = s => "mat-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const intOr = (el, d) => { const v = parseInt(el.value, 10); return Number.isFinite(v) ? v : d; };
 
-// ---------- ITEM CHOICE: type tabs, then a list grouped by biome ----------
+// ---------- ITEM CHOICE: type tabs, a search field, and a list grouped by biome ----------
 // "Other item": costs typed by hand, no preset.
 const CUSTOM = { type: "", name: "Other item", station: "", idol: "", maxq: 4, costs: "" };
 let selected = CUSTOM;
+const search = $("itemSearch");
 
 const biomeOrder = name => IDOL_BIOMES.findIndex(([, biome]) => biome === name);
 
@@ -33,30 +34,67 @@ ITEM_TYPES.forEach(type => {
   const tab = document.createElement("label");
   tab.className = "tab";
   tab.innerHTML = `<input type="radio" name="itemType" value="${esc(type)}"><span>${esc(type)}</span>`;
-  tab.querySelector("input").addEventListener("change", () => { showType(type); pickItem(firstOfType(type), false); schedule(); });
+  tab.querySelector("input").addEventListener("change", () => {
+    search.value = "";
+    showType(type); pickItem(firstListed(), false); schedule();
+  });
   $("itemTypes").appendChild(tab);
 });
 
-const firstOfType = type => {
-  const opt = els.item.querySelector("option[value]:not([value=''])");
-  return opt ? ITEMS[+opt.value] : ITEMS.find(it => it.type === type);
+const firstListed = () => {
+  const opt = els.item.querySelector("option:not([value='']):not([disabled])");
+  return opt ? ITEMS[+opt.value] : null;
 };
 
-// Fill the item list with the items of one type, grouped by biome in game order.
-function showType(type) {
-  document.querySelector(`input[name="itemType"][value="${type}"]`).checked = true;
+// Fill the item list with the given items, grouped in game order. label(item) names each group.
+function showList(items, label) {
   els.item.innerHTML = "";
-  const items = ITEMS.map((it, i) => ({ it, i })).filter(({ it }) => it.type === type);
-  items.sort((a, b) => (biomeOrder(biomeOf(a.it)) - biomeOrder(biomeOf(b.it))) || (a.i - b.i));
+  const list = items.map(it => ({ it, i: ITEMS.indexOf(it) }));
+  list.sort((a, b) => (ITEM_TYPES.indexOf(a.it.type) - ITEM_TYPES.indexOf(b.it.type))
+    || (biomeOrder(biomeOf(a.it)) - biomeOrder(biomeOf(b.it))) || (a.i - b.i));
   let group = null;
-  for (const { it, i } of items) {
-    const biome = biomeOf(it) || "Other";
-    if (!group || group.label !== biome) {
-      group = document.createElement("optgroup"); group.label = biome; els.item.appendChild(group);
+  for (const { it, i } of list) {
+    const name = label(it);
+    if (!group || group.label !== name) {
+      group = document.createElement("optgroup"); group.label = name; els.item.appendChild(group);
     }
     const o = document.createElement("option"); o.value = i; o.textContent = it.name; group.appendChild(o);
   }
 }
+
+// One tab: that type's items, grouped by biome.
+function showType(type) {
+  document.querySelector(`input[name="itemType"][value="${type}"]`).checked = true;
+  showList(ITEMS.filter(it => it.type === type), it => biomeOf(it) || "Other");
+}
+
+// Search: items of all types where every word typed starts one of the words in the name
+// ("ask" finds "Hood of Ask" and "Asksvin Cloak", not "Root Mask"), grouped by type and biome.
+const nameWords = it => it.name.toLowerCase().split(/[^a-z0-9öäåü]+/).filter(Boolean);
+function showMatches(text) {
+  const words = text.toLowerCase().split(/\s+/).filter(Boolean);
+  const found = ITEMS.filter(it => { const n = nameWords(it); return words.every(w => n.some(x => x.startsWith(w))); });
+  document.querySelectorAll('input[name="itemType"]').forEach(t => { t.checked = false; });
+  showList(found, it => `${it.type} · ${biomeOf(it) || "Other"}`);
+  if (!found.length) {
+    const o = document.createElement("option"); o.value = ""; o.disabled = true; o.textContent = "No items match";
+    els.item.appendChild(o);
+  }
+  return found;
+}
+
+search.addEventListener("input", () => {
+  const text = search.value.trim();
+  if (!text) {                                   // search cleared: back to the tab of the chosen item
+    if (selected !== CUSTOM) { showType(selected.type); els.item.value = String(ITEMS.indexOf(selected)); }
+    else { showType(ITEM_TYPES[0]); pickItem(CUSTOM, true); }
+    return;
+  }
+  const found = showMatches(text);
+  if (found.includes(selected)) els.item.value = String(ITEMS.indexOf(selected));
+  else if (found.length) { pickItem(firstListed(), false); schedule(); }
+  else els.item.value = "";
+});
 
 function showItemInfo() {
   const it = selected;
@@ -67,13 +105,13 @@ function showItemInfo() {
   const parts = [];
   if (it.station) parts.push("Station: " + it.station);
   if (it.idol) parts.push("Idol: " + it.idol);
-  els.info.textContent = parts.join(" · ") + (it.note ? " " + it.note : "");
+  els.info.textContent = parts.join(" · ") + (it.note ? "\n" + it.note : "");
 }
 
 // Select a preset (or CUSTOM) and load its costs. keepLevels: leave the level inputs as they are.
 function pickItem(it, keepLevels) {
   selected = it;
-  els.item.querySelector("option[value='']")?.remove();
+  els.item.querySelector("option[value='']:not([disabled])")?.remove();
   if (it === CUSTOM) {
     const o = document.createElement("option"); o.value = ""; o.textContent = "Other item (costs below)";
     els.item.prepend(o);
@@ -88,10 +126,13 @@ function pickItem(it, keepLevels) {
   showItemInfo();
 }
 
-$("customItem").addEventListener("click", () => { pickItem(CUSTOM, false); schedule(); els.recipe.focus(); });
+$("customItem").addEventListener("click", () => {
+  if (search.value) { search.value = ""; showType(ITEM_TYPES[0]); }
+  pickItem(CUSTOM, false); schedule(); els.recipe.focus();
+});
 
 function syncMats(rows) {
-  const names = rows.map(r => r.name);
+  const names = [...new Set(rows.map(r => r.name))];
   const current = Array.from(els.mats.children).map(c => c.dataset.name);
   if (names.join("\n") === current.join("\n")) return;
   els.mats.innerHTML = "";
@@ -130,11 +171,10 @@ function render() {
   const stock = Object.assign({}, have);
   let pre = [];
   if (cur < maxq) {
-    const short = [];
-    rows.forEach(r => {
-      let need = 0;
-      for (let q = cur + 1; q <= maxq; q++) need += r.amounts[q - 1] || 0;
-      if (need > 0) { pre.push(`${r.name} ${need}`); stock[r.name] = (stock[r.name] || 0) - need; if (stock[r.name] < 0) short.push(r.name); }
+    const short = [], need = {};
+    rows.forEach(r => { for (let q = cur + 1; q <= maxq; q++) need[r.name] = (need[r.name] || 0) + (r.amounts[q - 1] || 0); });
+    Object.entries(need).forEach(([n, amount]) => {
+      if (amount > 0) { pre.push(`${n} ${amount}`); stock[n] = (stock[n] || 0) - amount; if (stock[n] < 0) short.push(n); }
     });
     if (short.length) return showError(`Upgrading from Q${cur} to Q${maxq} needs more ${short.join(", ")} than you have. The Forge of Potential starts at the normal max level.`);
   }
@@ -146,11 +186,7 @@ function render() {
   // Table
   const last = Math.min(start + 30, Math.max(want || 0, start + 8));
   const results = [];
-  const mats = {
-    craft: Float64Array.from(sup.list, s => s.craft),
-    stock: Float64Array.from(sup.list, s => Math.max(0, s.stock)),
-    back: Array.from({ length: last + 1 }, (_, level) => Float64Array.from(rows, r => backAt(r, level)))
-  };
+  const mats = simMaterials(sup, last);
   for (let t = start + 1; t <= last; t++) results.push([t, simulate(maxq, start, t, idols, mats, safe, tried)]);
   const fewest = Math.min(...results.map(([, r]) => r[4]));
   const margin = (1.96 * Math.sqrt(0.25 / fewest) * 100).toFixed(1);

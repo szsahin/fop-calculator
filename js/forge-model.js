@@ -35,25 +35,51 @@ function backAt(r, level) {
   return Math.ceil(Math.fround(Math.fround(amountAt(r, 1) + (level >= 2 ? amountAt(r, level) : 0)) * BREAK_RETURN));
 }
 
-// Recraft cost to the normal max level, and the lowest refund (a break at the normal max level).
+// One entry per material. A material can appear on more than one cost line, for example Flametal in an item's
+// own recipe (returned on a break) and in the base item it is made from (never returned). Such lines share one
+// stock; each line keeps its own refund rule.
+function groupByMaterial(rows) {
+  const groups = [];
+  for (const r of rows) {
+    let g = groups.find(x => x.name === r.name);
+    if (!g) { g = { name: r.name, rows: [] }; groups.push(g); }
+    g.rows.push(r);
+  }
+  return groups;
+}
+
+// What a break returns of one material (all its lines) when the item was at quality `level`.
+const backOfMaterial = (g, level) => g.rows.reduce((sum, r) => sum + backAt(r, level), 0);
+
+// Recraft cost to the normal max level, and the lowest refund (a break at the normal max level), per material.
 // `recrafts` = how many copies the stock replaces when every copy breaks at that level (a break higher up returns more).
 function supply(rows, maxq, have) {
   let recrafts = Infinity;
   const limits = [];
-  const list = rows.map(r => {
+  const list = groupByMaterial(rows).map(g => {
     let craft = 0;
-    for (let q = 1; q <= maxq; q++) craft += amountAt(r, q);
-    const back = backAt(r, maxq);
+    for (const r of g.rows) for (let q = 1; q <= maxq; q++) craft += amountAt(r, q);
+    const back = backOfMaterial(g, maxq);
     const net = craft - back;
-    const stock = have[r.name] || 0;
+    const stock = have[g.name] || 0;
     if (net > 0) {
       const k = Math.floor(stock / net);
-      if (k < recrafts) { recrafts = k; limits.length = 0; limits.push(r.name); }
-      else if (k === recrafts) limits.push(r.name);
+      if (k < recrafts) { recrafts = k; limits.length = 0; limits.push(g.name); }
+      else if (k === recrafts) limits.push(g.name);
     }
-    return { name: r.name, craft, back, stock };
+    return { name: g.name, rows: g.rows, craft, back, stock };
   });
   return { list, recrafts, limits };
+}
+
+// The material input for simulate(): cost of one new copy, stock on hand and refund per break level, per material.
+// `stock` may be lower than the supply's stock, for example after paying for upgrades at the station first.
+function simMaterials(sup, lastLevel, stock = sup.list.map(s => s.stock)) {
+  return {
+    craft: Float64Array.from(sup.list, s => s.craft),
+    stock: Float64Array.from(stock, v => Math.max(0, v)),
+    back: Array.from({ length: lastLevel + 1 }, (_, level) => Float64Array.from(sup.list, s => backOfMaterial(s, level)))
+  };
 }
 
 // Game rules since patch 1.0.20, as read from the game code by Forge Oracle and ValheimSaveParser:
@@ -138,5 +164,5 @@ function simulate(n, start, target, idols, mats, safe, triedUpTo) {
 
 // For tests run outside the browser (Node.js). Browsers ignore this line.
 if (typeof module !== "undefined") {
-  module.exports = { P_SUCCESS, parseCosts, amountAt, backAt, supply, unityRoll, nextSeed: () => NEXT_SEED, simulate };
+  module.exports = { P_SUCCESS, parseCosts, amountAt, backAt, supply, simMaterials, unityRoll, nextSeed: () => NEXT_SEED, simulate };
 }

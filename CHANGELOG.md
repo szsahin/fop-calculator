@@ -2,6 +2,23 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.6.0-beta (2026-10-27)
+
+### Added
+- **All 227 items** that the Forge of Potential can upgrade in Valheim 1.0.20 are now presets: 127 weapons, 73 armor pieces, 19 shields and 8 tools. Costs come from the 1.0.20 game data; a sample of 22 items, covering every special case below, was checked against the Valheim wiki.
+- **Search field** above the tabs. It searches all tabs and finds items where each typed word starts a word of the name, for example "fang", "nord" or "frostfire sw". Results are grouped by type and biome.
+- **Items made from other gear** (45 items, for example the Frostfire Sword from a Nord Sword, or Klossen from a Flametal Mace): the recraft cost includes the base item's materials, which are never returned on a break.
+- Notes under the item list for special cases: items made from other gear, items cast at the Frost Foundry, items whose normal maximum is limited because the needed station level is not in the game yet, and the Pointy Hat, which can only be crafted during the Halloween event.
+
+### Changed
+- A material can now appear on two cost lines, for example in an item's own recipe and in the base item it is made from. Both lines use the same stock, and each line keeps its own refund rule.
+
+### Known limitation
+- The Nord Knucklechains' crafting recipe uses no Timberwood, but the game data lists 10 Timberwood as the recipe's base amount. The game may count those 10 when returning materials on a break; the calculator does not. This changes the Timberwood returned by a few units for this one item.
+
+### Unchanged
+- The calculation rules are the same. Every earlier preset gives exactly the same table as before.
+
 ## 0.5.0-beta (2026-10-27)
 
 ### Added

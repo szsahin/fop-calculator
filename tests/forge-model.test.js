@@ -90,6 +90,21 @@ test("Ingredients marked (no refund) are never returned", () => {
   assert.equal(model.backAt(rows[0], 3), 14);
 });
 
+test("A material on two lines shares one stock, and each line keeps its own refund rule", () => {
+  // Like an item made from another item: Flametal in its own recipe (returned) and in the base item (never returned).
+  const rows = model.parseCosts("Flametal: 5/5/10/20\nCharred Bone: 15/-/-/- (no refund)\nFlametal: 24/-/-/- (no refund)").rows;
+  const sup = model.supply(rows, 3, { "Flametal": 100, "Charred Bone": 40 });
+  assert.deepEqual(sup.list.map(s => s.name), ["Flametal", "Charred Bone"]);
+  const flametal = sup.list[0];
+  assert.equal(flametal.craft, 5 + 5 + 10 + 24);                          // both lines, up to Q3
+  assert.equal(flametal.back, Math.ceil(0.35 * (5 + 10)));                 // only the own-recipe line returns
+  assert.equal(sup.list[1].back, 0);
+  assert.equal(sup.recrafts, Math.min(Math.floor(100 / (44 - 6)), Math.floor(40 / 15)));
+  const mats = model.simMaterials(sup, 6);
+  assert.deepEqual(Array.from(mats.craft), [44, 15]);
+  assert.deepEqual(Array.from(mats.back[5]), [Math.ceil(0.35 * (5 + 22)), 0]);   // Q5 cost: floor(4.5 x 5) = 22
+});
+
 test("First attempts at consecutive levels are linked: a fresh seed almost never gives 5 successes in a row", () => {
   // Independent 65% rolls would give 5 in a row 11.6% of the time; the game's first rolls give about 0.03%.
   let five = 0;
