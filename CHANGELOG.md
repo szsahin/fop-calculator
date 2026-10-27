@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.1-beta (2026-10-28)
+
+### Changed
+- New banner files in a wider 10:3 shape (1600 × 480 and 2172 × 652 px), so less of the picture is cut at the top and bottom.
+- The dark overlay behind the header text was adjusted, so the text is easier to read and the picture stays bright.
+
+### Unchanged
+- The calculation and all presets are the same as in 0.7.0-beta.
+
 ## 0.7.0-beta (2026-10-28)
 
 ### Added
