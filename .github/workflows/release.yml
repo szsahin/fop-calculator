@@ -1,0 +1,86 @@
+# Tests and releases.
+#
+# On every push to main:
+#   1. Run the tests.
+#   2. Read the version from VERSION. If no tag "v<version>" exists yet, create the tag on this commit and a
+#      GitHub release, using that version's section of CHANGELOG.md as the release notes. Versions with a
+#      pre-release part (for example 0.6.0-beta) are marked as pre-releases.
+# If the tag already exists, nothing is released. So a release only needs: change VERSION, add a section to
+# CHANGELOG.md, commit and push.
+
+name: Test and release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  test-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run the tests
+        run: node --test tests/forge-model.test.js
+
+      - name: Read the version
+        id: version
+        run: |
+          version="$(tr -d '[:space:]' < VERSION)"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error file=VERSION::'$version' is not a valid version (expected for example 0.6.0-beta)"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
+            echo "Tag v$version already exists: nothing to release."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Take the release notes from CHANGELOG.md
+        if: steps.version.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          # The lines between "## <version> ..." and the next "## " heading; "### Added" becomes "## Added".
+          awk -v v="$VERSION" '
+            /^## / { if (found) exit; if ($0 == "## " v || index($0, "## " v " ") == 1) { found = 1; next } }
+            found  { print }
+          ' CHANGELOG.md | sed -e 's/^### /## /' -e '/./,$!d' > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "::error file=CHANGELOG.md::No section '## $VERSION' found. Add one before releasing."
+            exit 1
+          fi
+          {
+            echo
+            echo "**Live page:** https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
+            echo "**Full list of changes:** [CHANGELOG.md](https://github.com/${GITHUB_REPOSITORY}/blob/${TAG}/CHANGELOG.md)"
+          } >> notes.md
+          cat notes.md
+
+      - name: Create the tag and the release
+        if: steps.version.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          prerelease=""
+          if [[ "$VERSION" == *-* ]]; then prerelease="--prerelease"; fi
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --notes-file notes.md $prerelease
