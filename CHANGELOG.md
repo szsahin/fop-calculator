@@ -2,6 +2,18 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.0-beta (2026-10-28)
+
+### Added
+- A header picture on the calculator page: a banner with the Forge scene and the project logo, created by szsahin with ChatGPT. The title stays real text on a dark overlay, so it can be read in the light and the dark theme. On phones the picture is shown behind the title with an even overlay.
+- The banner is stored in two widths (1600 and 2172 px); the browser loads the one that fits the screen.
+
+### Removed
+- The text rune line under the title on both pages. The banner already shows runes. The Noto Sans Runic font stays in the repository for later use.
+
+### Unchanged
+- The calculation and all presets are the same as in 0.6.1-beta.
+
 ## 0.6.1-beta (2026-10-27)
 
 ### Added
