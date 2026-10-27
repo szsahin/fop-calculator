@@ -61,15 +61,18 @@ python3 -m http.server 8000
 Add an entry to `ITEMS` in `js/items.js`:
 
 ```js
-{ group: "Bows", name: "Spinesnap", station: "Black Forge", idol: "Black Marble Battle Idol", maxq: 4,
+{ type: "Weapons", name: "Spinesnap", station: "Black Forge", idol: "Black Marble Battle Idol", maxq: 4,
   costs: "Finewood: 10/5/10/20\nBone Fragments: 40/20/40/80\nRefined Eitr: 10/-/-/-" },
 ```
+
+- `type`: the tab the item is listed under: `Weapons`, `Armor` or `Tools`.
+- `idol`: the item's Forge of Potential idol. The biome group in the list (Meadows, Black Forest, … Deep North) comes from the idol's tier, so it needs no field of its own.
 
 - `costs`: one ingredient per line, then the amounts for Q1/Q2/Q3/Q4 as on the item's wiki page. Use `-` for none.
 - Add `(no refund)` after an ingredient the game never returns on a break, for example `Liquid Frost: 5/-/-/- (no refund)`.
 - `maxq`: the highest level the crafting station can reach.
 
-Any other item can also be pasted into the page directly with "Other item".
+Any other item can also be entered on the page directly with "Enter the costs of another item".
 
 ## Run the tests
 

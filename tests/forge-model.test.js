@@ -14,7 +14,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const model = require("../js/forge-model.js");
-const ITEMS = new Function(fs.readFileSync(path.join(__dirname, "../js/items.js"), "utf8") + "; return ITEMS;")();
+const { ITEMS, ITEM_TYPES, biomeOf } = new Function(
+  fs.readFileSync(path.join(__dirname, "../js/items.js"), "utf8") + "; return { ITEMS, ITEM_TYPES, biomeOf };")();
 
 // Valheim's string hash (GetStableHashCode). Used only here, to rebuild the test character's first seeds;
 // the app itself never uses character names.
@@ -120,7 +121,8 @@ test("Simulation: Spinesnap example gives the published numbers and the same res
 
 test("Every item preset can be read", () => {
   for (const it of ITEMS) {
-    if (!it.costs) continue;                       // "Other item" starts empty
+    assert.ok(ITEM_TYPES.includes(it.type), `${it.name}: unknown type "${it.type}"`);
+    assert.notEqual(biomeOf(it), "", `${it.name}: no biome for idol "${it.idol}"`);
     const { rows, bad } = model.parseCosts(it.costs);
     assert.deepEqual(bad, [], `${it.name}: unreadable cost lines`);
     assert.ok(rows.length > 0, `${it.name}: no ingredients`);

@@ -22,10 +22,12 @@
     <form class="bench" id="bench" autocomplete="off">
       <fieldset>
         <legend>Item</legend>
+        <div class="tabs" id="itemTypes" role="radiogroup" aria-label="Item type"></div>
         <div class="field">
           <label for="item">Item</label>
           <select id="item"></select>
           <p class="hint" id="itemInfo"></p>
+          <button type="button" class="linkbtn" id="customItem">Enter the costs of another item</button>
         </div>
         <div class="field">
           <label for="recipe">Cost per quality level</label>

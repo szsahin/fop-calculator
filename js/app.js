@@ -21,30 +21,74 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 const slug = s => "mat-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const intOr = (el, d) => { const v = parseInt(el.value, 10); return Number.isFinite(v) ? v : d; };
 
-ITEMS.forEach((it, i) => {
-  let group = els.item.lastElementChild;
-  if (!group || group.label !== it.group) {
-    group = document.createElement("optgroup"); group.label = it.group; els.item.appendChild(group);
-  }
-  const o = document.createElement("option"); o.value = i; o.textContent = it.name; group.appendChild(o);
+// ---------- ITEM CHOICE: type tabs, then a list grouped by biome ----------
+// "Other item": costs typed by hand, no preset.
+const CUSTOM = { type: "", name: "Other item", station: "", idol: "", maxq: 4, costs: "" };
+let selected = CUSTOM;
+
+const biomeOrder = name => IDOL_BIOMES.findIndex(([, biome]) => biome === name);
+
+// Tabs, one radio button per item type.
+ITEM_TYPES.forEach(type => {
+  const tab = document.createElement("label");
+  tab.className = "tab";
+  tab.innerHTML = `<input type="radio" name="itemType" value="${esc(type)}"><span>${esc(type)}</span>`;
+  tab.querySelector("input").addEventListener("change", () => { showType(type); pickItem(firstOfType(type), false); schedule(); });
+  $("itemTypes").appendChild(tab);
 });
 
+const firstOfType = type => {
+  const opt = els.item.querySelector("option[value]:not([value=''])");
+  return opt ? ITEMS[+opt.value] : ITEMS.find(it => it.type === type);
+};
+
+// Fill the item list with the items of one type, grouped by biome in game order.
+function showType(type) {
+  document.querySelector(`input[name="itemType"][value="${type}"]`).checked = true;
+  els.item.innerHTML = "";
+  const items = ITEMS.map((it, i) => ({ it, i })).filter(({ it }) => it.type === type);
+  items.sort((a, b) => (biomeOrder(biomeOf(a.it)) - biomeOrder(biomeOf(b.it))) || (a.i - b.i));
+  let group = null;
+  for (const { it, i } of items) {
+    const biome = biomeOf(it) || "Other";
+    if (!group || group.label !== biome) {
+      group = document.createElement("optgroup"); group.label = biome; els.item.appendChild(group);
+    }
+    const o = document.createElement("option"); o.value = i; o.textContent = it.name; group.appendChild(o);
+  }
+}
+
 function showItemInfo() {
-  const it = ITEMS[+els.item.value];
+  const it = selected;
+  if (it === CUSTOM) {
+    els.info.textContent = "Enter the item's costs below, as listed on its wiki page, and use the idol of the item's tier.";
+    return;
+  }
   const parts = [];
   if (it.station) parts.push("Station: " + it.station);
   if (it.idol) parts.push("Idol: " + it.idol);
-  if (!it.idol) parts.push("Use the idol of the item's tier, as listed on its wiki page.");
   els.info.textContent = parts.join(" · ") + (it.note ? " " + it.note : "");
 }
 
-function loadItem(i, keepLevels) {
-  const it = ITEMS[i];
+// Select a preset (or CUSTOM) and load its costs. keepLevels: leave the level inputs as they are.
+function pickItem(it, keepLevels) {
+  selected = it;
+  els.item.querySelector("option[value='']")?.remove();
+  if (it === CUSTOM) {
+    const o = document.createElement("option"); o.value = ""; o.textContent = "Other item (costs below)";
+    els.item.prepend(o);
+    els.item.value = "";
+  } else {
+    if (!els.item.querySelector(`option[value="${ITEMS.indexOf(it)}"]`)) showType(it.type);
+    els.item.value = String(ITEMS.indexOf(it));
+  }
   els.recipe.value = it.costs;
   els.maxq.value = it.maxq;
   if (!keepLevels) els.cur.value = it.maxq;
   showItemInfo();
 }
+
+$("customItem").addEventListener("click", () => { pickItem(CUSTOM, false); schedule(); els.recipe.focus(); });
 
 function syncMats(rows) {
   const names = rows.map(r => r.name);
@@ -80,7 +124,7 @@ function render() {
   const idols = idolsRaw === "" ? null : Math.min(500, Math.max(0, parseInt(idolsRaw, 10) || 0));
   const tried = Math.max(0, intOr(els.tried, 0));
   const safe = document.querySelector('input[name="rule"]:checked').value === "safe";
-  const name = ITEMS[+els.item.value].costs === els.recipe.value ? ITEMS[+els.item.value].name : "this item";
+  const name = selected !== CUSTOM && selected.costs === els.recipe.value ? selected.name : "this item";
 
   // Bring the item to the normal max level first, at its normal station.
   const stock = Object.assign({}, have);
@@ -152,14 +196,16 @@ function render() {
 let pending = 0;
 function schedule() { if (!pending) pending = requestAnimationFrame(() => { pending = 0; render(); }); }
 
-els.item.addEventListener("change", () => { loadItem(+els.item.value, false); schedule(); });
+els.item.addEventListener("change", () => {
+  if (els.item.value === "") return;
+  pickItem(ITEMS[+els.item.value], false); schedule();
+});
 ["recipe", "maxq", "cur", "want", "tried", "idols"].forEach(id => els[id].addEventListener("input", schedule));
 document.querySelectorAll('input[name="rule"]').forEach(r => r.addEventListener("change", schedule));
 $("bench").addEventListener("submit", e => e.preventDefault());
 
 // Initial state
-els.item.value = String(ITEMS.findIndex(it => it.name === START.item));
-loadItem(+els.item.value, true);
+pickItem(ITEMS.find(it => it.name === START.item), true);
 els.cur.value = START.cur; els.want.value = START.want; els.tried.value = START.tried; els.idols.value = START.idols;
 document.querySelector(`input[name="rule"][value="${START.rule}"]`).checked = true;
 render();

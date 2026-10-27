@@ -2,6 +2,17 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.4.0-beta (2026-10-27)
+
+### Changed
+- The item list is split into three tabs: Weapons, Armor and Tools.
+- In each tab, items are grouped by biome (Meadows, Black Forest, Swamp, Mountains, Plains, Mistlands, Ashlands, Deep North). The biome comes from the tier of the item's idol, so the list shows together the items that use the same idol. For example, Draugr Fang is listed under Swamp because it uses the Iron Battle Idol.
+- "Other item (paste costs)" is no longer an entry in the list. It is now the link "Enter the costs of another item" under the list.
+- In `js/items.js`, the `group` field is replaced by `type` (Weapons, Armor or Tools).
+
+### Unchanged
+- The calculation rules and results are the same as in 0.3.2-beta: every preset gives exactly the same table as before.
+
 ## 0.3.2-beta (2026-10-27)
 
 ### Added
