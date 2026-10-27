@@ -51,6 +51,7 @@ python3 -m http.server 8000
 | `js/app.js` | Calculator page |
 | `js/version.js` | Reads `VERSION` and shows it in the footer of both pages |
 | `VERSION` | The version number ([Semantic Versioning](https://semver.org)) |
+| `CHANGELOG.md` | Changes in each version |
 | `img/` | Icons and the stone picture used in the guide |
 | `fonts/` | Font files and their licenses |
 | `tests/forge-model.test.js` | Tests |
@@ -82,14 +83,15 @@ The tests check the random generator, the replay of the real test character's at
 
 ## Release a new version
 
-1. Change the number in `VERSION`, for example `0.3.2-beta`.
+1. Change the number in `VERSION`, for example `0.3.3-beta`, and add a section for it at the top of `CHANGELOG.md`.
 2. Run the tests.
-3. Commit, tag the commit (for example `v0.3.2-beta`) and push. GitHub Pages updates the site within a few minutes.
+3. Commit and push. GitHub Pages updates the site within a few minutes.
+4. Create a release on GitHub with the tag `v` + the version (for example `v0.3.3-beta`), using the changelog section as the release notes.
 
 ## Sources and credits
 
 - Forge mechanics: [Forge Oracle](https://github.com/papptimus/Forge-Oracle) (MIT) and [ValheimSaveParser](https://github.com/Melichor/ValheimSaveParser).
-- Item costs: the [Valheim wiki](https://valheim.weirdgloop.org/w/Forge_of_Potential), checked against the 1.0.20 game data in ValheimSaveParser.
+- Item costs: the [Valheim wiki](https://valheim.weirdgloop.org/w/Forge_of_Potential) and the 1.0.20 game data in ValheimSaveParser.
 - Fonts: Alegreya SC and Alegreya Sans (Huerta Tipográfica) and IBM Plex Mono (IBM), under the SIL Open Font License 1.1.
 
 ## License

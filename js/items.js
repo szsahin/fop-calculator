@@ -40,5 +40,13 @@ const ITEMS = [
     costs: "Lox Pelt: 5/3/6/12\nBone Fragments: 8/4/8/16\nRoot: 2/1/2/4" },
   { group: "Lox armor", name: "Lox Cape", station: "Workbench", idol: "Black Metal Protection Idol", maxq: 4,
     costs: "Lox Pelt: 6/2/4/8\nSilver: 2/-/-/-" },
+  { group: "Ask armor", name: "Hood of Ask", station: "Black Forge", idol: "Flametal Protection Idol", maxq: 4,
+    costs: "Linen Thread: 15/10/20/40\nLox Pelt: 4/2/4/8\nAsksvin Hide: 10/5/10/20" },
+  { group: "Ask armor", name: "Breastplate of Ask", station: "Black Forge", idol: "Flametal Protection Idol", maxq: 4,
+    costs: "Linen Thread: 15/10/20/40\nLox Pelt: 4/2/4/8\nAsksvin Hide: 10/5/10/20" },
+  { group: "Ask armor", name: "Trousers of Ask", station: "Black Forge", idol: "Flametal Protection Idol", maxq: 4,
+    costs: "Linen Thread: 15/10/20/40\nLox Pelt: 4/2/4/8\nAsksvin Hide: 10/5/10/20" },
+  { group: "Ask armor", name: "Asksvin Cloak", station: "Galdr Table", idol: "Flametal Protection Idol", maxq: 4,
+    costs: "Asksvin Hide: 6/2/4/8\nMorgen Sinew: 2/-/-/-" },
   { group: "Other", name: "Other item (paste costs)", station: "", idol: "", maxq: 4, costs: "" }
 ];
