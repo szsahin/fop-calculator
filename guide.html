@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What the Percentages Mean</title>
+<meta name="description" content="A short guide to the Forge of Potential percentages for players who do not work with statistics.">
+<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap guide">
+  <a class="back" href="index.html">← Back to the calculator</a>
+
+  <header class="top">
+    <p class="eyebrow">Forge of Potential Probability Calculator</p>
+    <h1>What the percentages mean</h1>
+    <p class="lede">A short guide for players who do not work with statistics. The examples use fixed numbers. They are not your own results.</p>
+  </header>
+
+  <section class="step">
+    <h2><span class="no">1</span>Start with one attempt</h2>
+    <div class="bag-row">
+      <img class="bag" src="img/stones.svg" width="150" height="150" alt="A bag of 100 stones: 65 white and 35 black">
+      <div class="step">
+        <p>Think of a bag with 100 stones: 65 white and 35 black. Each Forge attempt is like taking one stone without looking, then putting it back.</p>
+        <ul>
+          <li>White stone: the item goes up one level.</li>
+          <li>Black stone: the item breaks.</li>
+        </ul>
+        <p>You cannot know which stone you will take. You only know that white stones are more common.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">2</span>"65%" is about many attempts, not one</h2>
+    <p>"65% success" does not mean your next attempt will succeed. It means that if many people make the same attempt, about 65 out of every 100 succeed.</p>
+    <p>If 100 players each try once, the result will not be exactly 65. It may be 60 or 70. The more players there are, the closer the result comes to 65 out of 100.</p>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">3</span>A distribution shows all possible results and how often each one happens</h2>
+    <p>Example: 1000 players who have never upgraded a bow at the Forge each take a Q4 bow and keep upgrading until it breaks, with no recrafting. Where does each bow stop?</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Highest level before breaking</th><th>Bows out of 1000</th><th>Share</th></tr></thead>
+        <tbody>
+          <tr><td>Q4 (broke on the first try)</td><td class="n">350</td><td class="share"><span class="dbar" style="width:100%"></span></td></tr>
+          <tr><td>Q5</td><td class="n">316</td><td class="share"><span class="dbar" style="width:90.3%"></span></td></tr>
+          <tr><td>Q6</td><td class="n">168</td><td class="share"><span class="dbar" style="width:48%"></span></td></tr>
+          <tr><td>Q7</td><td class="n">99</td><td class="share"><span class="dbar" style="width:28.3%"></span></td></tr>
+          <tr><td>Q8</td><td class="n">67</td><td class="share"><span class="dbar" style="width:19.1%"></span></td></tr>
+          <tr><td>Q9 or higher</td><td class="n">0</td><td class="share"><span class="dbar" style="width:0%"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>This table is a distribution. It shows:</p>
+    <ul>
+      <li>The most common result is breaking early.</li>
+      <li>Higher levels are less common. On a character's first attempts, a bow almost never climbs more than 4 levels in a row (fewer than 1 in 1000). This comes from how the game makes its rolls; the notes on the calculator page explain it.</li>
+      <li>Every player is somewhere in this table. Nobody knows in advance which row will be theirs.</li>
+    </ul>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">4</span>How to read the calculator</h2>
+    <p>Example: the calculator shows 97.4% to reach Q6 and 2.6% to lose the item. This means: if 1000 players with the same item, idols and materials follow the same plan, about 974 reach Q6 and about 26 lose their item.</p>
+    <p>You will be in one of these groups. A high percentage makes the good result likely, not certain.</p>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">5</span>"Average" is not "your result"</h2>
+    <p>The "Idols used" column is an average across many players. If it shows about 4, one player may use 2 idols and another may use 8. Both results are normal.</p>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">6</span>Bad luck streaks are normal</h2>
+    <p>Even with 65% success, three breaks in a row at the same level happen to about 1 player in 23. If it happens to you, the game is not broken; you are in the less common part of the distribution.</p>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">7</span>A real test: 36 idols and no Q6 hammer</h2>
+    <p>While building this calculator, we tested the Forge with a new character in a test world with unlimited materials. We crafted hammers, upgraded them to Q3 (their normal maximum) at the workbench, and took them to the Forge one by one, with 36 Wooden Battle Idols.</p>
+    <p>After 36 attempts:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Attempt to</th><th>Attempts</th><th>Successes</th><th>Breaks</th></tr></thead>
+        <tbody>
+          <tr><td>Q4</td><td class="n">18</td><td class="n">12</td><td class="n">6</td></tr>
+          <tr><td>Q5</td><td class="n">12</td><td class="n">7</td><td class="n">5</td></tr>
+          <tr><td>Q6</td><td class="n">6</td><td class="n">0</td><td class="n">6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Seventeen hammers broke, and none reached Q6. It looked as if the game had set a hidden limit for this character.</p>
+    <p>It had not. The character file showed that every attempt followed the normal rules. All six attempts at Q6 simply drew a black stone. Six breaks in a row at one level happens to about 1 player in 550. That is rare, but among thousands of players, some will see it.</p>
+    <p>The next attempt at Q6 succeeded, and a later hammer reached Q7.</p>
+    <p>What this shows:</p>
+    <ul>
+      <li>A long run of bad luck is not proof of a hidden limit.</li>
+      <li>Each new attempt at a level is a new chance. Earlier breaks do not lower it.</li>
+      <li>Rare results happen to real players. This is why the calculator gives chances, not promises.</li>
+    </ul>
+  </section>
+
+  <section class="step short">
+    <h2>In short</h2>
+    <ul>
+      <li>A percentage tells you how often something happens across many tries.</li>
+      <li>A distribution tells you all the possible results and how common each one is.</li>
+      <li>Your own result is one point from that distribution. You can make a good result more likely, but you cannot make it certain.</li>
+    </ul>
+  </section>
+
+  <a class="back" href="index.html">← Back to the calculator</a>
+  <footer class="foot">Forge of Potential Probability Calculator <span id="appVersion"></span> · Guide</footer>
+</div>
+<script src="js/version.js"></script>
+</body>
+</html>

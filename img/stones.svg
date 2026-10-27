@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150" width="150" height="150" role="img" aria-label="A bag of 100 stones: 65 white and 35 black">
+  <!-- 10 x 10 stones: rows 1-6 white, row 7 has 5 white and 5 black, rows 8-10 black (65 white, 35 black). -->
+  <style>
+    .w { fill: #ffffff; stroke: #d2dbe1; }
+    .b { fill: #27313a; stroke: #d2dbe1; }
+    @media (prefers-color-scheme: dark) {
+      .w { fill: #e4eaee; stroke: #2c3843; }
+      .b { fill: #0b0f13; stroke: #2c3843; }
+    }
+  </style>
+  <defs>
+    <pattern id="white" width="15.4" height="15.4" patternUnits="userSpaceOnUse">
+      <circle class="w" cx="5.7" cy="5.7" r="5.2" stroke-width="1"/>
+    </pattern>
+    <pattern id="black" width="15.4" height="15.4" patternUnits="userSpaceOnUse">
+      <circle class="b" cx="5.7" cy="5.7" r="5.2" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="150" height="92.4" fill="url(#white)"/>
+  <rect x="0" y="92.4" width="77" height="15.4" fill="url(#white)"/>
+  <rect x="77" y="92.4" width="73" height="15.4" fill="url(#black)"/>
+  <rect x="0" y="107.8" width="150" height="42.2" fill="url(#black)"/>
+</svg>

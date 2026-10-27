@@ -1,0 +1,18 @@
+# Valheim character and world files: never commit these
+*.fch
+*.fch.old
+*.db
+*.fwl
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Node.js (only used to run the tests)
+node_modules/

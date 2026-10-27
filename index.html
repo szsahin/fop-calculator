@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forge of Potential Probability Calculator</title>
+<meta name="description" content="Chance to reach each Valheim Forge of Potential level from your idols and recraft materials, simulated with the game's own rules.">
+<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap calc">
+  <header class="top">
+    <p class="eyebrow">Valheim 1.0.20 · Forge of Potential</p>
+    <h1>Forge of Potential Probability Calculator</h1>
+    <p class="lede">The chance to reach each quality level with the idols and materials you have. It plays out the game's own upgrade rules and never uses your character name or save file.</p>
+  </header>
+
+  <div class="layout">
+    <form class="bench" id="bench" autocomplete="off">
+      <fieldset>
+        <legend>Item</legend>
+        <div class="field">
+          <label for="item">Item</label>
+          <select id="item"></select>
+          <p class="hint" id="itemInfo"></p>
+        </div>
+        <div class="field">
+          <label for="recipe">Cost per quality level</label>
+          <textarea id="recipe" rows="5" spellcheck="false"></textarea>
+          <p class="hint">One material per line, then the amounts for Q1/Q2/Q3/Q4 as on the wiki item page. Use - for none. Paste any weapon or armor here. Add "(no refund)" after an ingredient the game never returns on a break.</p>
+        </div>
+        <div class="row3">
+          <div class="field">
+            <label for="maxq">Normal max</label>
+            <input id="maxq" type="number" min="1" max="10" step="1">
+          </div>
+          <div class="field">
+            <label for="cur">Current</label>
+            <input id="cur" type="number" min="1" max="60" step="1">
+          </div>
+          <div class="field">
+            <label for="want">Wanted</label>
+            <input id="want" type="number" min="2" max="60" step="1" placeholder="Any">
+          </div>
+        </div>
+        <div class="field">
+          <label for="tried">Already tried at the Forge up to</label>
+          <input id="tried" type="number" min="1" max="60" step="1" placeholder="Never">
+          <p class="hint">The highest level this character has already attempted for this item at the Forge, since patch 1.0.20. Leave empty if never. If this character upgraded the item to its current level, enter at least that level.</p>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>What you have</legend>
+        <div class="mat">
+          <label for="idols">Idols for this item</label>
+          <input id="idols" type="number" min="0" max="500" step="1" placeholder="No limit">
+        </div>
+        <div class="mats" id="mats"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Rules</legend>
+        <span class="label">When the last copy is at risk</span>
+        <label class="choice">
+          <input type="radio" name="rule" id="rule-go" value="go" checked>
+          <span>Keep trying until the wanted level</span>
+          <span class="hint">If a break cannot be replaced, you have no item left.</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="rule" id="rule-safe" value="safe">
+          <span>Never risk the last copy</span>
+          <span class="hint">Stop when a break could not be recrafted. You always keep an item.</span>
+        </label>
+      </fieldset>
+    </form>
+
+    <main class="outlook" aria-live="polite">
+      <p class="msg" id="msg" hidden></p>
+      <section class="target" id="target"></section>
+      <dl class="supply" id="supply"></dl>
+      <div class="tablehead">
+        <h2>Future upgrades</h2>
+        <div class="key"><span><i class="i-r"></i>Reach the level</span><span><i class="i-k"></i>Keep an item below it</span><span><i class="i-l"></i>Lose the item</span></div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Level</th><th>Reach it</th><th>Outcome</th><th>Lose the item</th><th>Kept below</th><th>Idols used (avg)</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="simNote"></p>
+      <section class="short" aria-labelledby="short-title">
+        <h2 id="short-title">How to read the percentages</h2>
+        <ul>
+          <li>A percentage tells you how often something happens across many tries.</li>
+          <li>A distribution tells you all the possible results and how common each one is.</li>
+          <li>Your own result is one point from that distribution. You can make a good result more likely, but you cannot make it certain.</li>
+        </ul>
+        <p><a href="guide.html">Read the full explanation with examples →</a></p>
+      </section>
+
+      <section class="notes">
+        <h2>How the numbers are calculated</h2>
+        <ul>
+          <li>Each attempt uses one idol and succeeds 65% of the time. A failure destroys the item. Each row is a separate plan: aim for that level, then stop.</li>
+          <li>After a break, a new copy is crafted and upgraded to the normal max level at its station, if your materials allow it. Part of the cost comes back on each break.</li>
+          <li>On a break the game returns 35% of the base recipe plus the upgrade cost of the level the item had, rounded up. Above level 4, each extra level counts as half a level in that cost. Idols are never returned, and neither is an ingredient marked "(no refund)", such as Liquid Frost. This rule is from the game data and was checked in game.</li>
+          <li>Since patch 1.0.20 each attempt uses a seed stored in the character. The first attempt at a level starts from a seed made from the character's name, and first attempts at consecutive levels are linked: on first attempts, one copy almost never climbs more than 4 levels. After every attempt, success or failure, the game stores a new, unrelated seed, so a recrafted copy gets new results.</li>
+          <li>The page plays out these rules for 40,000 simulated players with unknown names and counts the results. It never uses your character name or save file. Rules as read from the game code by <a href="https://github.com/papptimus/Forge-Oracle" target="_blank" rel="noopener">Forge Oracle</a> and <a href="https://github.com/Melichor/ValheimSaveParser" target="_blank" rel="noopener">ValheimSaveParser</a>.</li>
+          <li>Item costs: <a href="https://valheim.weirdgloop.org/w/Weapons" target="_blank" rel="noopener">Weapons</a>, <a href="https://valheim.weirdgloop.org/w/Armor" target="_blank" rel="noopener">Armor</a> and <a href="https://valheim.weirdgloop.org/w/Forge_of_Potential" target="_blank" rel="noopener">Forge of Potential</a> on the Valheim wiki, checked against the 1.0.20 game data in ValheimSaveParser.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+  <footer class="foot">Forge of Potential Probability Calculator <span id="appVersion"></span></footer>
+</div>
+<script src="js/items.js"></script>
+<script src="js/forge-model.js"></script>
+<script src="js/app.js"></script>
+<script src="js/version.js"></script>
+</body>
+</html>
