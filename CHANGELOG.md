@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.6.1-beta (2026-10-27)
+
+### Added
+- A decorative rune line under the page title on both pages: "Forge of Potential" in Elder Futhark runes. It is decoration only and hidden from screen readers.
+- The Noto Sans Runic font (SIL Open Font License), stored in the repository like the other fonts.
+
+### Unchanged
+- The calculation and all presets are the same as in 0.6.0-beta.
+
 ## 0.6.0-beta (2026-10-27)
 
 ### Added
