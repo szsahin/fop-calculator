@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.2-beta (2026-10-28)
+
+### Added
+- A decorative rune band above the header and above the footer on both pages: the Elder Futhark row, drawn from the Noto Sans Runic font. It uses the accent color of the light or dark theme, is hidden from screen readers and is not printed.
+- The band picture is stored inside `css/style.css`, so it also shows when the page is opened from disk.
+
+### Unchanged
+- The calculation and all presets are the same as in 0.7.1-beta.
+
 ## 0.7.1-beta (2026-10-28)
 
 ### Changed

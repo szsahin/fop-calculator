@@ -90,7 +90,7 @@ The tests check the random generator, the replay of the real test character's at
 
 - Forge mechanics: [Forge Oracle](https://github.com/papptimus/Forge-Oracle) (MIT) and [ValheimSaveParser](https://github.com/Melichor/ValheimSaveParser).
 - Item costs: the [Valheim wiki](https://valheim.weirdgloop.org/w/Forge_of_Potential) and the 1.0.20 game data in ValheimSaveParser.
-- Fonts: Alegreya SC and Alegreya Sans (Huerta Tipográfica), IBM Plex Mono (IBM) and Noto Sans Runic (the Noto Project), under the SIL Open Font License 1.1. Noto Sans Runic is stored for later use and is not used on the pages now.
+- Fonts: Alegreya SC and Alegreya Sans (Huerta Tipográfica), IBM Plex Mono (IBM) and Noto Sans Runic (the Noto Project), under the SIL Open Font License 1.1. The rune bands on both pages are drawn from Noto Sans Runic and stored as a picture in `css/style.css`.
 - Header banner and logo: created by szsahin with ChatGPT.
 
 ## License
