@@ -190,6 +190,10 @@ tr.wanted td { background: var(--accent-soft); }
 .guide { max-width: 760px; padding-block: 24px 56px; display: grid; gap: 26px; line-height: 1.55; }
 .guide h1 { font-size: clamp(1.9rem, 4.2vw, 2.5rem); }
 .guide .lede { max-width: none; }
+.guide-head { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 18px; }
+.guide-logo { width: 80px; height: 80px; }
+.guide-head-text { display: grid; gap: 6px; }
+@media (max-width: 640px) { .guide-head { grid-template-columns: minmax(0, 1fr); gap: 12px; } .guide-logo { width: 56px; height: 56px; } }
 .back { font-size: 15px; font-weight: 700; text-decoration: none; }
 .back:hover { text-decoration: underline; }
 

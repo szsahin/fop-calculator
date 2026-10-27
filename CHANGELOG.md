@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.3-beta (2026-10-28)
+
+### Added
+- The project logo in the guide page header, left of the title (above it on phones). The guide has no banner.
+- A "MIT License" link in the footer of both pages. It opens the LICENSE file on GitHub.
+
+### Unchanged
+- The calculation and all presets are the same as in 0.7.2-beta.
+
 ## 0.7.2-beta (2026-10-28)
 
 ### Added
