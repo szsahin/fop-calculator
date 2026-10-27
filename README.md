@@ -55,7 +55,7 @@ python3 -m http.server 8000
 | `img/` | Icons and the stone picture used in the guide |
 | `fonts/` | Font files and their licenses |
 | `tests/forge-model.test.js` | Tests |
-| `.github/workflows/release.yml` | Runs the tests and creates releases (see below) |
+| `.github/workflows/release.yml` | Runs the tests on every push and creates the releases |
 
 ## Add or correct an item
 
@@ -84,14 +84,6 @@ node --test tests/forge-model.test.js
 ```
 
 The tests check the random generator, the replay of the real test character's attempts, the refunds counted in game, the linked first attempts, the simulation results and every item preset. If a test fails after a game patch, check the game first; only then change the expected values.
-
-## Release a new version
-
-1. Change the number in `VERSION`, for example `0.6.0-beta`.
-2. Add a section for it at the top of `CHANGELOG.md`, starting with `## 0.6.0-beta (date)`.
-3. Commit and push to `main`. GitHub Pages updates the site within a few minutes.
-
-The workflow in `.github/workflows/release.yml` does the rest. On every push to `main` it runs the tests. If no tag `v` + version exists yet, it creates the tag on that commit and a GitHub release, with that version's changelog section as the release notes. Versions with a pre-release part, such as `-beta`, are marked as pre-releases. If the tests fail or the changelog section is missing, no release is made, and the run is shown as failed under **Actions**.
 
 ## Sources and credits
 
