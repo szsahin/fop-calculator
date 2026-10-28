@@ -134,6 +134,6 @@ The code is released under the [MIT License](LICENSE). The fonts keep their own 
 <!-- Badges -->
 [![Latest release](https://img.shields.io/github/v/release/szsahin/fop-calculator?include_prereleases&label=release)](https://github.com/szsahin/fop-calculator/releases)
 [![Tests](https://github.com/szsahin/fop-calculator/actions/workflows/release.yml/badge.svg)](https://github.com/szsahin/fop-calculator/actions/workflows/release.yml)
-[![License: MIT](https://img.shields.io/github/license/szsahin/fop-calculator)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Live page](https://img.shields.io/badge/live%20page-szsahin.github.io-9c5f17)](https://szsahin.github.io/fop-calculator/)
 <!-- Badges end -->
