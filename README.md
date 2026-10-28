@@ -129,6 +129,8 @@ The tests check the random generator, the replay of the real test character's at
 
 The code is released under the [MIT License](LICENSE). The fonts keep their own license (see `fonts/`).
 
+---
+
 <!-- Badges -->
 [![Latest release](https://img.shields.io/github/v/release/szsahin/fop-calculator?include_prereleases&label=release)](https://github.com/szsahin/fop-calculator/releases)
 [![Tests](https://github.com/szsahin/fop-calculator/actions/workflows/release.yml/badge.svg)](https://github.com/szsahin/fop-calculator/actions/workflows/release.yml)
