@@ -2,6 +2,14 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.4-beta (2026-10-28)
+
+### Added
+- Guide, step 8: an item that needs a single trophy or other single ingredient (for example the Fenris Hood or the Headdress of the Bear) always gets it back on a break, because 35% of 1, rounded up, is 1. Checked in game with the Headdress of the Bear.
+
+### Unchanged
+- The calculation and all presets are the same as in 0.7.3-beta.
+
 ## 0.7.3-beta (2026-10-28)
 
 ### Added
