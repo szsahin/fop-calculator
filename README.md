@@ -5,6 +5,13 @@
   <img src="docs/screenshot-light.webp" alt="The calculator page: item inputs on the left, the chance to reach each quality level on the right">
 </picture>
 
+<!-- Badges: delete from here to "Badges end" to remove them. -->
+[![Latest release](https://img.shields.io/github/v/release/szsahin/fop-calculator?include_prereleases&label=release)](https://github.com/szsahin/fop-calculator/releases)
+[![Tests](https://github.com/szsahin/fop-calculator/actions/workflows/release.yml/badge.svg)](https://github.com/szsahin/fop-calculator/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/github/license/szsahin/fop-calculator)](LICENSE)
+[![Live page](https://img.shields.io/badge/live%20page-szsahin.github.io-9c5f17)](https://szsahin.github.io/fop-calculator/)
+<!-- Badges end -->
+
 A calculator for the Forge of Potential in Valheim 1.0.20. Enter an item, its current and wanted level, your idols and your materials, and the page shows the chance to reach each level, the chance to lose the item, and how many idols you will use on average.
 
 **Live page:** https://szsahin.github.io/fop-calculator/
@@ -12,6 +19,26 @@ A calculator for the Forge of Potential in Valheim 1.0.20. Enter an item, its cu
 The calculator never reads your character file or uses your character name. It shows the chances a player has without knowing the game's hidden seeds, so it does not remove the risk the Forge is designed to have.
 
 Unofficial fan tool. Not affiliated with or endorsed by Iron Gate AB.
+
+<!-- Features: delete from here to "Features end" to remove the section. -->
+## Features
+
+- All 227 items the Forge of Potential can upgrade in Valheim 1.0.20, with a search field and Weapons, Armor, Shields and Tools tabs.
+- Recrafts after a break, limited by your materials, with the exact amount the game returns.
+- Linked first attempts at consecutive levels, as the game does them.
+- Chance to reach each level, chance to lose the item, and average idols used, for at least 8 levels above the current one.
+- A guide that explains the percentages for players who do not work with statistics.
+- Light and dark theme.
+- No install and no build step: it also works when opened from disk.
+<!-- Features end -->
+
+## Privacy
+
+- No cookies, no analytics and no tracking.
+- No requests to other websites: the fonts and pictures are stored in this repository.
+- The page never reads your character file or uses your character name.
+- The only thing it saves is your theme choice (Auto, Light or Dark), in your own browser.
+- The live page is hosted on GitHub Pages; GitHub may keep standard server logs, as for any website it hosts.
 
 ## How the calculation works
 
@@ -83,6 +110,10 @@ The presets cover all 227 items that the Forge of Potential can upgrade in Valhe
 - `note` (optional): text shown under the item list.
 
 Any other item can also be entered on the page directly with "Enter the costs of another item".
+
+## Report a wrong cost or result
+
+If an item cost, a refund or a result looks wrong, please [open an issue](https://github.com/szsahin/fop-calculator/issues/new) with the item name, a link to its wiki page, and what you saw in game.
 
 ## Run the tests
 
