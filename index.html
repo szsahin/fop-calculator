@@ -9,9 +9,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
 <link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
 </head>
 <body>
 <div class="wrap calc">
+  <div class="themebar" id="themePick" role="group" aria-label="Color theme" hidden>
+    <button type="button" data-theme="auto" title="Follow the system setting">Auto</button><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button>
+  </div>
   <div class="rune-band" aria-hidden="true"></div>
   <header class="top hero">
     <img class="hero-bg" src="img/banner-1600.webp" srcset="img/banner-1600.webp 1600w, img/banner-2172.webp 2172w" sizes="(min-width: 1212px) 1180px, 100vw" width="2172" height="652" alt="">

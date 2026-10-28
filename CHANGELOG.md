@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.7-beta (2026-10-28)
+
+### Added
+- A color theme picker at the top right of both pages: **Auto** (follow the system setting, the default), **Light** or **Dark**. The choice is kept in the browser and applies to both pages. It is set before the page is drawn, so the page does not flash in the other theme.
+- The new script `js/theme.js`. Without JavaScript the picker is hidden and the page follows the system setting, as before.
+
+### Unchanged
+- The calculation, all presets and the page text are the same as in 0.7.6-beta.
+
 ## 0.7.6-beta (2026-10-28)
 
 ### Changed
