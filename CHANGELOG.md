@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.6-beta (2026-10-28)
+
+### Changed
+- On the live site the address bar shows short addresses: `…/fop-calculator/guide` instead of `guide.html`, and `…/fop-calculator/` instead of `index.html`. Links between the pages use the short form too, and section anchors are kept (for example `guide#single-trophy`).
+- The pages keep `.html` in their own links, so a copy opened from disk or from a local web server works as before. The new script `js/links.js` changes the addresses only on github.io.
+
+### Unchanged
+- The calculation, all presets and the page text are the same as in 0.7.5-beta.
+
 ## 0.7.5-beta (2026-10-28)
 
 ### Added

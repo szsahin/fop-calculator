@@ -50,6 +50,7 @@ python3 -m http.server 8000
 | `js/forge-model.js` | Game rules and simulation (no page code) |
 | `js/app.js` | Calculator page |
 | `js/version.js` | Reads `VERSION` and shows it in the footer of both pages |
+| `js/links.js` | On the live site only: shows short addresses (`guide` instead of `guide.html`) |
 | `VERSION` | The version number ([Semantic Versioning](https://semver.org)) |
 | `CHANGELOG.md` | Changes in each version |
 | `img/` | Icons, the header banner and logo, and the stone picture used in the guide |
