@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.5-beta (2026-10-28)
+
+### Added
+- Guide: a "Contents" list under the title, with a link to each section.
+- Guide: every section has a fixed anchor, so a link can point to it directly, for example `guide.html#single-trophy`. Anchors: `one-attempt`, `many-attempts`, `distribution`, `read-the-calculator`, `average`, `bad-luck-streaks`, `hammer-test`, `single-trophy`, `in-short`.
+
+### Unchanged
+- The guide text, the calculation and all presets are the same as in 0.7.4-beta.
+
 ## 0.7.4-beta (2026-10-28)
 
 ### Added
