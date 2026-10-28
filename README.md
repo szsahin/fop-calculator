@@ -1,5 +1,10 @@
 # Forge of Potential Probability Calculator
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.webp">
+  <img src="docs/screenshot-light.webp" alt="The calculator page: item inputs on the left, the chance to reach each quality level on the right">
+</picture>
+
 A calculator for the Forge of Potential in Valheim 1.0.20. Enter an item, its current and wanted level, your idols and your materials, and the page shows the chance to reach each level, the chance to lose the item, and how many idols you will use on average.
 
 **Live page:** https://szsahin.github.io/fop-calculator/
@@ -55,6 +60,7 @@ python3 -m http.server 8000
 | `VERSION` | The version number ([Semantic Versioning](https://semver.org)) |
 | `CHANGELOG.md` | Changes in each version |
 | `img/` | Icons, the header banner and logo, and the stone picture used in the guide |
+| `docs/` | Screenshots for this README |
 | `fonts/` | Font files and their licenses |
 | `tests/forge-model.test.js` | Tests |
 | `.github/workflows/release.yml` | Runs the tests on every push and creates the releases |
