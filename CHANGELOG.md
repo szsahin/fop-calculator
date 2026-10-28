@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.7.8-beta (2026-10-28)
+
+### Changed
+- The color theme picker is now three icon buttons (a half-filled circle for Auto, a sun for Light, a moon for Dark) at the top right corner of the page. It is outside the page flow, so the empty row it added in 0.7.7-beta is gone and the page layout is the same as before 0.7.7-beta. On narrow screens the picker sits in front of the end of the top rune band.
+- Each button has a name for screen readers and a tooltip.
+
+### Unchanged
+- The calculation, all presets and the page text are the same as in 0.7.7-beta.
+
 ## 0.7.7-beta (2026-10-28)
 
 ### Added

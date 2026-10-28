@@ -12,10 +12,12 @@
 <script src="js/theme.js"></script>
 </head>
 <body>
+<div class="themebar" id="themePick" role="group" aria-label="Color theme" hidden>
+  <button type="button" data-theme="auto" aria-label="Auto: follow the system setting" title="Auto: follow the system setting"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 0 0 12.5z" fill="currentColor"/></svg></button>
+  <button type="button" data-theme="light" aria-label="Light" title="Light"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="3" fill="currentColor"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3.05 3.05l1.13 1.13M11.82 11.82l1.13 1.13M3.05 12.95l1.13-1.13M11.82 4.18l1.13-1.13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <button type="button" data-theme="dark" aria-label="Dark" title="Dark"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M13.6 10.4A6.2 6.2 0 0 1 5.6 2.4a6.2 6.2 0 1 0 8 8z" fill="currentColor"/></svg></button>
+</div>
 <div class="wrap calc">
-  <div class="themebar" id="themePick" role="group" aria-label="Color theme" hidden>
-    <button type="button" data-theme="auto" title="Follow the system setting">Auto</button><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button>
-  </div>
   <div class="rune-band" aria-hidden="true"></div>
   <header class="top hero">
     <img class="hero-bg" src="img/banner-1600.webp" srcset="img/banner-1600.webp 1600w, img/banner-2172.webp 2172w" sizes="(min-width: 1212px) 1180px, 100vw" width="2172" height="652" alt="">
