@@ -2,6 +2,14 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.8.1-beta (2026-11-26)
+
+### Changed
+- The line under the "Game version" choice that said how the rules were checked is removed. The same information stays in the notes under the table ("How the numbers are calculated").
+
+### Unchanged
+- The calculation and all presets are the same as in 0.8.0-beta.
+
 ## 0.8.0-beta (2026-11-26)
 
 ### Added

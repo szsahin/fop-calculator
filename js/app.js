@@ -45,7 +45,6 @@ RULES.forEach(r => {
 versionSelect.value = rules.id;
 
 function showRulesText() {
-  $("rulesInfo").textContent = rules.checked;
   $("ruleRefund").textContent = rules.refundText;
   $("ruleSeed").textContent = rules.firstSeedFrom;
   $("ruleChecked").textContent = rules.checked;
