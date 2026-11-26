@@ -1,7 +1,7 @@
-// Forge of Potential game rules (Valheim 1.0.20): cost parsing, refunds and the upgrade simulation.
+// Forge of Potential engine: cost parsing, recraft supply and the upgrade simulation.
+// What can differ between game versions (success chance, refund rule, idols) is in the rule files in js/rules/;
+// the functions below take the chosen rule set as an input.
 // No page code here, so this file can also be loaded and tested without a browser.
-
-const P_SUCCESS = 0.65;
 
 const NO_REFUND = /\(\s*no refund\s*\)\s*$/i;
 
@@ -27,13 +27,8 @@ function amountAt(r, q) {
   return q < 4 ? (q - 1) * per : Math.floor((4 + (q - 4) / 2) * per);
 }
 
-// What a break returns of one ingredient when the item was at quality `level`:
-// 35% of (base amount + amount of that level), in the game's 32-bit floats, rounded up.
-const BREAK_RETURN = Math.fround(0.35);
-function backAt(r, level) {
-  if (!r.refund) return 0;
-  return Math.ceil(Math.fround(Math.fround(amountAt(r, 1) + (level >= 2 ? amountAt(r, level) : 0)) * BREAK_RETURN));
-}
+// What a break returns of one cost line when the item was at quality `level`, by the rule set's refund rule.
+const backAt = (r, level, rules) => rules.refund(r, level, amountAt);
 
 // One entry per material. A material can appear on more than one cost line, for example Flametal in an item's
 // own recipe (returned on a break) and in the base item it is made from (never returned). Such lines share one
@@ -49,17 +44,17 @@ function groupByMaterial(rows) {
 }
 
 // What a break returns of one material (all its lines) when the item was at quality `level`.
-const backOfMaterial = (g, level) => g.rows.reduce((sum, r) => sum + backAt(r, level), 0);
+const backOfMaterial = (g, level, rules) => g.rows.reduce((sum, r) => sum + backAt(r, level, rules), 0);
 
 // Recraft cost to the normal max level, and the lowest refund (a break at the normal max level), per material.
 // `recrafts` = how many copies the stock replaces when every copy breaks at that level (a break higher up returns more).
-function supply(rows, maxq, have) {
+function supply(rows, maxq, have, rules) {
   let recrafts = Infinity;
   const limits = [];
   const list = groupByMaterial(rows).map(g => {
     let craft = 0;
     for (const r of g.rows) for (let q = 1; q <= maxq; q++) craft += amountAt(r, q);
-    const back = backOfMaterial(g, maxq);
+    const back = backOfMaterial(g, maxq, rules);
     const net = craft - back;
     const stock = have[g.name] || 0;
     if (net > 0) {
@@ -69,25 +64,30 @@ function supply(rows, maxq, have) {
     }
     return { name: g.name, rows: g.rows, craft, back, stock };
   });
-  return { list, recrafts, limits };
+  return { list, recrafts, limits, rules };
 }
 
-// The material input for simulate(): cost of one new copy, stock on hand and refund per break level, per material.
-// `stock` may be lower than the supply's stock, for example after paying for upgrades at the station first.
+// The input for simulate(): the rule set's success chance, and per material the cost of one new copy, the stock
+// on hand and the refund per break level. `stock` may be lower than the supply's stock, for example after paying
+// for upgrades at the station first.
 function simMaterials(sup, lastLevel, stock = sup.list.map(s => s.stock)) {
   return {
+    success: sup.rules.successChance,
     craft: Float64Array.from(sup.list, s => s.craft),
     stock: Float64Array.from(stock, v => Math.max(0, v)),
-    back: Array.from({ length: lastLevel + 1 }, (_, level) => Float64Array.from(sup.list, s => backOfMaterial(s, level)))
+    back: Array.from({ length: lastLevel + 1 }, (_, level) => Float64Array.from(sup.list, s => backOfMaterial(s, level, sup.rules)))
   };
 }
 
-// Game rules since patch 1.0.20, as read from the game code by Forge Oracle and ValheimSaveParser:
+// Seed rules since patch 1.0.20, as read from the game code by Forge Oracle and ValheimSaveParser:
 // each attempt has a key = hash(item) + target level. The seed is the one the character stored for that key,
-// or, if the character never tried that key, hash(character name) + key. The game calls Random.InitState(seed),
-// the roll is Random.value, and Random.Range(0, 99999999) is stored as the new seed for that key.
-// The attempt succeeds when roll <= 0.65; otherwise the item is destroyed.
-// Because first-attempt seeds of consecutive levels are consecutive numbers, those first rolls are linked.
+// or, if the character never tried that key, a character value + key: hash(character name) in 1.0.20 – 1.0.29,
+// hash(creation date and time) since 1.0.30. The game calls Random.InitState(seed), the roll is Random.value, and
+// Random.Range(0, 99999999) is stored as the new seed for that key. The attempt succeeds when the roll is at most
+// the rule set's success chance; otherwise the item is destroyed.
+// Because first-attempt seeds of consecutive levels are consecutive numbers, those first rolls are linked. The
+// simulation does not know the character value, so it draws a random one per simulated player: the same for
+// every rule set so far.
 
 // Unity's xorshift128 after InitState(seed): returns Random.value and sets NEXT_SEED.
 let NEXT_SEED = 0;
@@ -110,7 +110,7 @@ function mix32(h) {
   h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35);
   h ^= h >>> 16; return h >>> 0;
 }
-const playerBase = i => mix32(Math.imul(i + 1, 0x9e3779b1) ^ 0x2545f491);   // hash(name) + hash(item): unknown, so random
+const playerBase = i => mix32(Math.imul(i + 1, 0x9e3779b1) ^ 0x2545f491);   // character value + hash(item): unknown, so random
 const storedSeed = (i, L) => mix32(Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(L, 0x632be5ab) ^ 0x68e31da4) % 99999999;
 
 const SIM_PLAYERS = 40000;       // simulated players per row
@@ -121,8 +121,8 @@ const SIM_MAX_ATTEMPTS = 20000;  // attempts per simulated player, never more
 
 // Chance for one plan: start at level `start`, aim for `target`, then stop.
 // n = normal max level (a recrafted copy comes back at n), idols = number or null (no limit),
-// mats = { craft: cost of one new copy at level n, stock: materials on hand, back: back[level] = refund per material },
-// all per material in the same order. safe = never attempt when a break could not be recrafted,
+// mats = from simMaterials(): { success: success chance, craft: cost of one new copy at level n, stock: materials on
+// hand, back: back[level] = refund per material }, all per material in the same order. safe = never attempt when a break could not be recrafted,
 // triedUpTo = highest level this character already attempted for this item (0 = never).
 // Returns [reach, loseItem, keepBelow, idolsUsedAvg, playersSimulated].
 function simulate(n, start, target, idols, mats, safe, triedUpTo) {
@@ -151,7 +151,7 @@ function simulate(n, start, target, idols, mats, safe, triedUpTo) {
       const L = level + 1;
       const roll = unityRoll(used[L] ? seeds[L] : (base + L) >>> 0);
       seeds[L] = NEXT_SEED; used[L] = 1; spent++;
-      if (roll <= P_SUCCESS) { level = L; continue; }
+      if (roll <= mats.success) { level = L; continue; }
       if (!canReplace(level)) { lose++; break; }        // the break's refund is not enough for a new copy
       const back = mats.back[level];
       for (let m = 0; m < M; m++) s[m] += back[m] - mats.craft[m];
@@ -164,5 +164,5 @@ function simulate(n, start, target, idols, mats, safe, triedUpTo) {
 
 // For tests run outside the browser (Node.js). Browsers ignore this line.
 if (typeof module !== "undefined") {
-  module.exports = { P_SUCCESS, parseCosts, amountAt, backAt, supply, simMaterials, unityRoll, nextSeed: () => NEXT_SEED, simulate };
+  module.exports = { parseCosts, amountAt, backAt, supply, simMaterials, unityRoll, nextSeed: () => NEXT_SEED, simulate };
 }

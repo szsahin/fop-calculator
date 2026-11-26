@@ -2,6 +2,32 @@
 
 All notable changes to this project are listed here. Version numbers follow [Semantic Versioning](https://semver.org).
 
+## 0.8.0-beta (2026-11-26)
+
+### Added
+- **Game version choice** at the top of the Item box: **Valheim 1.0.30 and later** (the default) or **Valheim 1.0.20 – 1.0.29**. The choice is kept in the browser. The notes under the table and the line under it name the rules in use.
+- **Valheim 1.0.30 rules**, from the 1.0.30 patch notes and ValheimSaveParser's update for 1.0.30:
+  - A break returns 65% of everything the item took of an ingredient so far (the craft and every upgrade up to the level it had), rounded to the nearest whole number. Before, it was 35% of the craft and the last level, rounded up. A break now costs about half as much material, so the same stock allows about twice as many recrafts. At high levels a break can return more than a new copy costs.
+  - The first-attempt seed comes from the character's creation date and time instead of its name. The seeds of consecutive levels are still consecutive, so first attempts are still linked; this needs no change in the calculation.
+  - The success chance (65%) is unchanged, and every failure still destroys the item.
+  - These rules are not yet checked in game. The refund rule was compared with ValheimSaveParser's code for every item and every level up to Q10.
+- **Helmet of the Protector** (Deep North, Black Forge), upgradable since 1.0.30. The list now has 228 items.
+- One rule file per game version in `js/rules/`, and a README section on adding a version.
+
+### Changed
+- **19 items use the idols that 1.0.30 corrected**, and are listed under the matching biome: Nord Atgeir, Bronze Axe, Early Axes, Flint Axe, Nord Axe, Frostfire Axe, Iron Axe, Jotun Bane, Draugr Fang, Nord Knucklechains, Headdress of the Bear, Abyssal Razor, Skoll and Hati, Black Metal Pickaxe, Wooden Sword and the four Splitnir. With "Valheim 1.0.20 – 1.0.29" chosen, they keep their old idols.
+- `js/forge-model.js` is now the shared engine; the success chance and the refund rule come from the chosen rule file.
+
+### Fixed
+- Headdress of the Caller: its upgrades need no Moose Trophy (the game data has none). The preset had 1/2/4 Moose Trophy for Q2/Q3/Q4.
+
+### Known limitation
+- Nord Knucklechains: the game counts 10 Timberwood as the recipe's base amount in the refund, although crafting uses none; the calculator does not. With the 1.0.30 refund rule this changes the Timberwood returned by about 6 to 7 units.
+- The first copy's upgrade cost from its current level to a normal max above the item's station maximum (only when "Normal max" is set higher than the preset) is still counted as free. Under research.
+
+### Unchanged
+- With "Valheim 1.0.20 – 1.0.29" chosen, every preset gives exactly the same table as in 0.7.8-beta (except the Headdress of the Caller fix).
+
 ## 0.7.8-beta (2026-10-28)
 
 ### Changed

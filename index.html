@@ -23,7 +23,7 @@
     <img class="hero-bg" src="img/banner-1600.webp" srcset="img/banner-1600.webp 1600w, img/banner-2172.webp 2172w" sizes="(min-width: 1212px) 1180px, 100vw" width="2172" height="652" alt="">
     <img class="hero-logo" src="img/logo-240.webp" width="240" height="240" alt="">
     <div class="hero-text">
-      <p class="eyebrow">Valheim 1.0.20 · Forge of Potential</p>
+      <p class="eyebrow">Valheim · Forge of Potential</p>
       <h1>Forge of Potential Probability Calculator</h1>
       <p class="lede">The chance to reach each quality level with the idols and materials you have. It plays out the game's own upgrade rules and never uses your character name or save file.</p>
     </div>
@@ -33,6 +33,11 @@
     <form class="bench" id="bench" autocomplete="off">
       <fieldset>
         <legend>Item</legend>
+        <div class="field">
+          <label for="gameVersion">Game version</label>
+          <select id="gameVersion"></select>
+          <p class="hint" id="rulesInfo"></p>
+        </div>
         <div class="field">
           <label for="itemSearch">Search all items</label>
           <input id="itemSearch" type="search" placeholder="For example: fang, nord, ask" autocomplete="off" spellcheck="false">
@@ -127,10 +132,10 @@
         <ul>
           <li>Each attempt uses one idol and succeeds 65% of the time. A failure destroys the item. Each row is a separate plan: aim for that level, then stop.</li>
           <li>After a break, a new copy is crafted and upgraded to the normal max level at its station, if your materials allow it. Part of the cost comes back on each break.</li>
-          <li>On a break the game returns 35% of the base recipe plus the upgrade cost of the level the item had, rounded up. Above level 4, each extra level counts as half a level in that cost. Idols are never returned, and neither is an ingredient marked "(no refund)", such as Liquid Frost. This rule is from the game data and was checked in game.</li>
-          <li>Since patch 1.0.20 each attempt uses a seed stored in the character. The first attempt at a level starts from a seed made from the character's name, and first attempts at consecutive levels are linked: on first attempts, one copy almost never climbs more than 4 levels. After every attempt, success or failure, the game stores a new, unrelated seed, so a recrafted copy gets new results.</li>
-          <li>The page plays out these rules for 40,000 simulated players with unknown names and counts the results. It never uses your character name or save file. Rules as read from the game code by <a href="https://github.com/papptimus/Forge-Oracle" target="_blank" rel="noopener">Forge Oracle</a> and <a href="https://github.com/Melichor/ValheimSaveParser" target="_blank" rel="noopener">ValheimSaveParser</a>.</li>
-          <li>Item costs: <a href="https://valheim.weirdgloop.org/w/Weapons" target="_blank" rel="noopener">Weapons</a>, <a href="https://valheim.weirdgloop.org/w/Armor" target="_blank" rel="noopener">Armor</a> and <a href="https://valheim.weirdgloop.org/w/Forge_of_Potential" target="_blank" rel="noopener">Forge of Potential</a> on the Valheim wiki, checked against the 1.0.20 game data in ValheimSaveParser.</li>
+          <li>On a break the game returns <span id="ruleRefund"></span>. Above level 4, each extra level counts as half a level in the upgrade cost. Idols are never returned, and neither is an ingredient marked "(no refund)", such as Liquid Frost. <span id="ruleChecked"></span></li>
+          <li>Since patch 1.0.20 each attempt uses a seed stored in the character. The first attempt at a level starts from a seed made from <span id="ruleSeed"></span>, and first attempts at consecutive levels are linked: on first attempts, one copy almost never climbs more than 4 levels. After every attempt, success or failure, the game stores a new, unrelated seed, so a recrafted copy gets new results.</li>
+          <li>The page plays out these rules for 40,000 simulated players with unknown characters and counts the results. It never uses your character name or save file. Rules as read from the game code by <a href="https://github.com/papptimus/Forge-Oracle" target="_blank" rel="noopener">Forge Oracle</a> and <a href="https://github.com/Melichor/ValheimSaveParser" target="_blank" rel="noopener">ValheimSaveParser</a>.</li>
+          <li>Item costs: <a href="https://valheim.weirdgloop.org/w/Weapons" target="_blank" rel="noopener">Weapons</a>, <a href="https://valheim.weirdgloop.org/w/Armor" target="_blank" rel="noopener">Armor</a> and <a href="https://valheim.weirdgloop.org/w/Forge_of_Potential" target="_blank" rel="noopener">Forge of Potential</a> on the Valheim wiki, checked against the 1.0.30 game data in ValheimSaveParser.</li>
         </ul>
       </section>
     </main>
@@ -140,6 +145,8 @@
 </div>
 <script src="js/items.js"></script>
 <script src="js/forge-model.js"></script>
+<script src="js/rules/valheim-1.0.20.js"></script>
+<script src="js/rules/valheim-1.0.30.js"></script>
 <script src="js/app.js"></script>
 <script src="js/version.js"></script>
 <script src="js/links.js"></script>

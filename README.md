@@ -5,7 +5,7 @@
   <img src="docs/screenshot-light.webp" alt="The calculator page: item inputs on the left, the chance to reach each quality level on the right">
 </picture>
 
-A calculator for the Forge of Potential in Valheim 1.0.20. Enter an item, its current and wanted level, your idols and your materials, and the page shows the chance to reach each level, the chance to lose the item, and how many idols you will use on average.
+A calculator for the Forge of Potential in Valheim 1.0.20 and later. Enter an item, its current and wanted level, your idols and your materials, and the page shows the chance to reach each level, the chance to lose the item, and how many idols you will use on average.
 
 **Live page:** https://szsahin.github.io/fop-calculator/
 
@@ -16,7 +16,8 @@ Unofficial fan tool. Not affiliated with or endorsed by Iron Gate AB.
 <!-- Features: delete from here to "Features end" to remove the section. -->
 ## Features
 
-- All 227 items the Forge of Potential can upgrade in Valheim 1.0.20, with a search field and Weapons, Armor, Shields and Tools tabs.
+- All 228 items the Forge of Potential can upgrade in Valheim 1.0.30, with a search field and Weapons, Armor, Shields and Tools tabs.
+- A game version choice: the rules of Valheim 1.0.30 and later, or of 1.0.20 – 1.0.29.
 - Recrafts after a break, limited by your materials, with the exact amount the game returns.
 - Linked first attempts at consecutive levels, as the game does them.
 - Chance to reach each level, chance to lose the item, and average idols used, for at least 8 levels above the current one.
@@ -35,24 +36,36 @@ Unofficial fan tool. Not affiliated with or endorsed by Iron Gate AB.
 
 ## How the calculation works
 
-The page plays out the game's own upgrade rules for 40,000 simulated players with unknown names and counts the results.
+The page plays out the game's own upgrade rules for 40,000 simulated players with unknown characters and counts the results. The rules of the chosen game version are used:
+
+| | Valheim 1.0.20 – 1.0.29 | Valheim 1.0.30 and later |
+|---|---|---|
+| Success chance | 65% | 65% |
+| First-attempt seed made from | the character name | the character's creation date and time |
+| Refund on a break | 35% of the craft amount plus the amount of the level the item had, rounded up | 65% of the craft amount plus every upgrade amount up to the level the item had, rounded to the nearest whole number |
+| Idols | 19 items use the idols that 1.0.30 corrected | as in the game data |
+| Helmet of the Protector | cannot be upgraded | can be upgraded |
+| Checked in game | yes (see below) | not yet |
+
 
 - Each attempt uses one idol of the item's tier and succeeds when the roll is 0.65 or less. A failure destroys the item.
-- Since patch 1.0.20 each attempt uses a seed stored in the character. The first attempt at a level starts from a seed made from the character name, the item and the level. Because these first-attempt seeds of consecutive levels are consecutive numbers, the first rolls are linked: on first attempts, one copy almost never climbs more than 4 levels in a row.
+- Since patch 1.0.20 each attempt uses a seed stored in the character. The first attempt at a level starts from a seed made from a character value (see the table), the item and the level. Because these first-attempt seeds of consecutive levels are consecutive numbers, the first rolls are linked: on first attempts, one copy almost never climbs more than 4 levels in a row.
 - After every attempt, success or failure, the game stores a new, unrelated seed for that item and level, so a recrafted copy gets new results.
-- On a break, the game returns 35% of the base recipe plus the upgrade cost of the level the item had, rounded up. Above level 4, each extra level counts as half a level in that cost. Idols are never returned.
+- On a break, the game returns part of the materials (see the table). Above level 4, each extra level counts as half a level in the upgrade cost. Idols are never returned. In 1.0.30 a break at a high level can return more than a new copy costs, because the refund also counts the levels reached at the Forge with idols only.
 
 The results are the same every time for the same inputs. Each number can differ from the exact value by up to about 0.5 percentage points.
 
 ### How the rules were checked
 
-The rules come from the game code as read by [Forge Oracle](https://github.com/papptimus/Forge-Oracle) and [ValheimSaveParser](https://github.com/Melichor/ValheimSaveParser). The code in this repository is a separate implementation written from those descriptions. It was checked in game with a new test character:
+The rules come from the game code as read by [Forge Oracle](https://github.com/papptimus/Forge-Oracle) and [ValheimSaveParser](https://github.com/Melichor/ValheimSaveParser). The code in this repository is a separate implementation written from those descriptions. The 1.0.20 rules were checked in game with a new test character:
 
 - 48 recorded hammer attempts were replayed exactly from the character name and the rules, including every seed the game stored.
 - The result of a new attempt was worked out before it was made, and the game gave that result.
 - The materials returned by four hammer breaks at Q3, Q4, Q5 and Q7 matched the 35% rule (the 50% value on some wiki pages is wrong).
 
 These results are stored in the tests, so any later change can be checked against them.
+
+The 1.0.30 rules come from the 1.0.30 patch notes and ValheimSaveParser's update for 1.0.30. Their refund rule was compared with ValheimSaveParser's code for every item and every level up to Q10, but has not been checked in game yet.
 
 ## Use it
 
@@ -72,7 +85,8 @@ python3 -m http.server 8000
 | `guide.html` | "What the percentages mean": a short guide for players who do not work with statistics |
 | `css/style.css` | One stylesheet for both pages |
 | `js/items.js` | Item presets |
-| `js/forge-model.js` | Game rules and simulation (no page code) |
+| `js/forge-model.js` | Engine: cost parsing and simulation, shared by all game versions (no page code) |
+| `js/rules/` | One file per game version with its own rules: success chance, refund, idol differences, items not yet upgradable |
 | `js/app.js` | Calculator page |
 | `js/version.js` | Reads `VERSION` and shows it in the footer of both pages |
 | `js/theme.js` | Color theme picker (Auto, Light, Dark) on both pages; keeps the choice in the browser |
@@ -87,7 +101,7 @@ python3 -m http.server 8000
 
 ## Add or correct an item
 
-The presets cover all 227 items that the Forge of Potential can upgrade in Valheim 1.0.20. To correct one, or to add an item from a later game version, edit its entry in `ITEMS` in `js/items.js`:
+The presets cover all 228 items that the Forge of Potential can upgrade in Valheim 1.0.30. To correct one, or to add an item from a later game version, edit its entry in `ITEMS` in `js/items.js`. `items.js` always holds the newest game data; an older game version lists its differences (other idols, items it cannot upgrade) in its own file in `js/rules/`. An entry looks like this:
 
 ```js
 { type: "Weapons", name: "Spinesnap", station: "Black Forge", idol: "Black Marble Battle Idol", maxq: 4,
@@ -104,7 +118,18 @@ The presets cover all 227 items that the Forge of Potential can upgrade in Valhe
 
 Any other item can also be entered on the page directly with "Enter the costs of another item".
 
-## Report a wrong cost or result
+## Add a game version with new rules
+
+When a patch changes the Forge of Potential rules:
+
+1. Copy the newest file in `js/rules/` to `js/rules/valheim-<version>.js`, for example `valheim-1.0.40.js`, and set its `id` to the same version.
+2. Change only what the patch changed: the success chance, the refund function, the texts.
+3. Update `js/items.js` to the new game data. Move the old values the new data replaces (idols, items that were not upgradable before) into the older rule files' `idols` and `unavailable` lists.
+4. Add one `<script>` line for the new file in `index.html`, after the other rule files.
+5. Add tests for the new rules. Leave the tests of the older versions as they are.
+
+The page lists every rule file in the "Game version" choice; the highest version is the default. A confirmed rule file is only changed to fix a mistake, never to follow a newer patch.
+
 
 If an item cost, a refund or a result looks wrong, please [open an issue](https://github.com/szsahin/fop-calculator/issues/new) with the item name, a link to its wiki page, and what you saw in game.
 
@@ -116,12 +141,12 @@ Needs [Node.js](https://nodejs.org) 18 or newer, no packages:
 node --test tests/forge-model.test.js
 ```
 
-The tests check the random generator, the replay of the real test character's attempts, the refunds counted in game, the linked first attempts, the simulation results and every item preset. If a test fails after a game patch, check the game first; only then change the expected values.
+The tests check the random generator, the replay of the real test character's attempts (1.0.20), the refunds counted in game (1.0.20), the 1.0.30 refunds as ValheimSaveParser's 1.0.30 code gives them, the linked first attempts, the simulation results for both versions, every rule file and every item preset. If a test fails after a game patch, check the game first; only then change the expected values.
 
 ## Sources and credits
 
 - Forge mechanics: [Forge Oracle](https://github.com/papptimus/Forge-Oracle) (MIT) and [ValheimSaveParser](https://github.com/Melichor/ValheimSaveParser).
-- Item costs: the [Valheim wiki](https://valheim.weirdgloop.org/w/Forge_of_Potential) and the 1.0.20 game data in ValheimSaveParser.
+- Item costs: the [Valheim wiki](https://valheim.weirdgloop.org/w/Forge_of_Potential) and the 1.0.30 game data in ValheimSaveParser.
 - Fonts: Alegreya SC and Alegreya Sans (Huerta Tipográfica), IBM Plex Mono (IBM) and Noto Sans Runic (the Noto Project), under the SIL Open Font License 1.1. The rune bands on both pages are drawn from Noto Sans Runic and stored as a picture in `css/style.css`.
 - Header banner and logo: created by szsahin with ChatGPT.
 

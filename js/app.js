@@ -1,5 +1,5 @@
 // Calculator page: reads the inputs, runs the simulation (forge-model.js) for each level and shows the results.
-// Needs items.js and forge-model.js to be loaded first.
+// Needs items.js, forge-model.js and the rule files (js/rules/) to be loaded first.
 
 // Starting state: the example from the conversation.
 const START = { item: "Spinesnap", cur: 4, want: 6, tried: "", idols: 15, rule: "go",
@@ -20,6 +20,36 @@ const pct = v => {
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const slug = s => "mat-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const intOr = (el, d) => { const v = parseInt(el.value, 10); return Number.isFinite(v) ? v : d; };
+
+// ---------- GAME VERSION: one rule set per file in js/rules/; the newest is the default ----------
+const versionKey = id => id.split(".").map(Number);
+const newerFirst = (a, b) => { const x = versionKey(a.id), y = versionKey(b.id);
+  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return y[i] - x[i]; return 0; };
+const RULES = (globalThis.RULESETS || []).slice().sort(newerFirst);
+const RULES_KEY = "fop-rules";
+const savedRules = () => { try { return localStorage.getItem(RULES_KEY); } catch (e) { return null; } };
+let rules = RULES.find(r => r.id === savedRules()) || RULES[0];
+
+// The items as this game version has them: without the items it cannot upgrade, and with its own idols.
+let view = [];
+const buildView = () => {
+  view = ITEMS.filter(it => !rules.unavailable.includes(it.name))
+    .map(it => rules.idols[it.name] ? Object.assign({}, it, { idol: rules.idols[it.name] }) : it);
+};
+buildView();
+
+const versionSelect = $("gameVersion");
+RULES.forEach(r => {
+  const o = document.createElement("option"); o.value = r.id; o.textContent = r.label; versionSelect.appendChild(o);
+});
+versionSelect.value = rules.id;
+
+function showRulesText() {
+  $("rulesInfo").textContent = rules.checked;
+  $("ruleRefund").textContent = rules.refundText;
+  $("ruleSeed").textContent = rules.firstSeedFrom;
+  $("ruleChecked").textContent = rules.checked;
+}
 
 // ---------- ITEM CHOICE: type tabs, a search field, and a list grouped by biome ----------
 // "Other item": costs typed by hand, no preset.
@@ -43,13 +73,13 @@ ITEM_TYPES.forEach(type => {
 
 const firstListed = () => {
   const opt = els.item.querySelector("option:not([value='']):not([disabled])");
-  return opt ? ITEMS[+opt.value] : null;
+  return opt ? view[+opt.value] : null;
 };
 
 // Fill the item list with the given items, grouped in game order. label(item) names each group.
 function showList(items, label) {
   els.item.innerHTML = "";
-  const list = items.map(it => ({ it, i: ITEMS.indexOf(it) }));
+  const list = items.map(it => ({ it, i: view.indexOf(it) }));
   list.sort((a, b) => (ITEM_TYPES.indexOf(a.it.type) - ITEM_TYPES.indexOf(b.it.type))
     || (biomeOrder(biomeOf(a.it)) - biomeOrder(biomeOf(b.it))) || (a.i - b.i));
   let group = null;
@@ -65,7 +95,7 @@ function showList(items, label) {
 // One tab: that type's items, grouped by biome.
 function showType(type) {
   document.querySelector(`input[name="itemType"][value="${type}"]`).checked = true;
-  showList(ITEMS.filter(it => it.type === type), it => biomeOf(it) || "Other");
+  showList(view.filter(it => it.type === type), it => biomeOf(it) || "Other");
 }
 
 // Search: items of all types where every word typed starts one of the words in the name
@@ -73,7 +103,7 @@ function showType(type) {
 const nameWords = it => it.name.toLowerCase().split(/[^a-z0-9öäåü]+/).filter(Boolean);
 function showMatches(text) {
   const words = text.toLowerCase().split(/\s+/).filter(Boolean);
-  const found = ITEMS.filter(it => { const n = nameWords(it); return words.every(w => n.some(x => x.startsWith(w))); });
+  const found = view.filter(it => { const n = nameWords(it); return words.every(w => n.some(x => x.startsWith(w))); });
   document.querySelectorAll('input[name="itemType"]').forEach(t => { t.checked = false; });
   showList(found, it => `${it.type} · ${biomeOf(it) || "Other"}`);
   if (!found.length) {
@@ -86,12 +116,12 @@ function showMatches(text) {
 search.addEventListener("input", () => {
   const text = search.value.trim();
   if (!text) {                                   // search cleared: back to the tab of the chosen item
-    if (selected !== CUSTOM) { showType(selected.type); els.item.value = String(ITEMS.indexOf(selected)); }
+    if (selected !== CUSTOM) { showType(selected.type); els.item.value = String(view.indexOf(selected)); }
     else { showType(ITEM_TYPES[0]); pickItem(CUSTOM, true); }
     return;
   }
   const found = showMatches(text);
-  if (found.includes(selected)) els.item.value = String(ITEMS.indexOf(selected));
+  if (found.includes(selected)) els.item.value = String(view.indexOf(selected));
   else if (found.length) { pickItem(firstListed(), false); schedule(); }
   else els.item.value = "";
 });
@@ -117,8 +147,8 @@ function pickItem(it, keepLevels) {
     els.item.prepend(o);
     els.item.value = "";
   } else {
-    if (!els.item.querySelector(`option[value="${ITEMS.indexOf(it)}"]`)) showType(it.type);
-    els.item.value = String(ITEMS.indexOf(it));
+    if (!els.item.querySelector(`option[value="${view.indexOf(it)}"]`)) showType(it.type);
+    els.item.value = String(view.indexOf(it));
   }
   els.recipe.value = it.costs;
   els.maxq.value = it.maxq;
@@ -179,7 +209,7 @@ function render() {
     if (short.length) return showError(`Upgrading from Q${cur} to Q${maxq} needs more ${short.join(", ")} than you have. The Forge of Potential starts at the normal max level.`);
   }
   const start = Math.max(cur, maxq);
-  const sup = supply(rows, maxq, stock);
+  const sup = supply(rows, maxq, stock, rules);
 
   els.msg.hidden = true; els.target.hidden = false; els.supply.hidden = false;
 
@@ -190,7 +220,7 @@ function render() {
   for (let t = start + 1; t <= last; t++) results.push([t, simulate(maxq, start, t, idols, mats, safe, tried)]);
   const fewest = Math.min(...results.map(([, r]) => r[4]));
   const margin = (1.96 * Math.sqrt(0.25 / fewest) * 100).toFixed(1);
-  $("simNote").textContent = `Each row plays out the game's rules for ${fewest.toLocaleString("en-US")} simulated players. A number can differ from the exact value by up to about ${margin} percentage points.`;
+  $("simNote").textContent = `Each row plays out the rules of ${rules.label} for ${fewest.toLocaleString("en-US")} simulated players. A number can differ from the exact value by up to about ${margin} percentage points.`;
   els.rows.innerHTML = results.map(([t, r]) => `
     <tr class="${t === want ? "wanted" : ""}">
       <td class="lvl">Q${t}${t === want ? '<span class="tag">Wanted</span>' : ""}</td>
@@ -220,8 +250,8 @@ function render() {
   const recraftText = sup.recrafts === Infinity
     ? "No limit. The refund covers the full recraft cost."
     : sup.recrafts === 0
-    ? `Not even once if the copy breaks at Q${maxq}. A break at a higher level returns a little more.`
-    : `At least <span class="strong num">${sup.recrafts}</span> ${sup.recrafts === 1 ? "time" : "times"}. ${esc(sup.limits.join(" and "))} ${sup.limits.length > 1 ? "run" : "runs"} out first. A break at a higher level returns a little more.`;
+    ? `Not even once if the copy breaks at Q${maxq}. A break at a higher level returns more.`
+    : `At least <span class="strong num">${sup.recrafts}</span> ${sup.recrafts === 1 ? "time" : "times"}. ${esc(sup.limits.join(" and "))} ${sup.limits.length > 1 ? "run" : "runs"} out first. A break at a higher level returns more.`;
   els.supply.innerHTML = `
     ${pre.length ? `<dt>First, Q${cur} → Q${maxq}</dt><dd class="num">${list(pre)}</dd>` : ""}
     <dt>Recraft to Q${maxq}</dt><dd class="num">${list(sup.list.filter(s => s.craft > 0).map(s => `${s.name} ${s.craft}`))}</dd>
@@ -234,14 +264,28 @@ function schedule() { if (!pending) pending = requestAnimationFrame(() => { pend
 
 els.item.addEventListener("change", () => {
   if (els.item.value === "") return;
-  pickItem(ITEMS[+els.item.value], false); schedule();
+  pickItem(view[+els.item.value], false); schedule();
 });
 ["recipe", "maxq", "cur", "want", "tried", "idols"].forEach(id => els[id].addEventListener("input", schedule));
 document.querySelectorAll('input[name="rule"]').forEach(r => r.addEventListener("change", schedule));
 $("bench").addEventListener("submit", e => e.preventDefault());
 
+versionSelect.addEventListener("change", () => {
+  rules = RULES.find(r => r.id === versionSelect.value) || RULES[0];
+  try { localStorage.setItem(RULES_KEY, rules.id); } catch (e) { /* storage blocked */ }
+  const name = selected.name, type = selected.type, text = search.value.trim();
+  const typed = { recipe: els.recipe.value, maxq: els.maxq.value };    // costs as entered, also if edited by hand
+  buildView(); showRulesText();
+  if (text) showMatches(text); else showType(type || ITEM_TYPES[0]);
+  const same = selected === CUSTOM ? CUSTOM : view.find(it => it.name === name);
+  if (same) { pickItem(same, true); els.recipe.value = typed.recipe; els.maxq.value = typed.maxq; }
+  else pickItem(firstListed() || view[0], false);               // this version cannot upgrade the chosen item
+  schedule();
+});
+
 // Initial state
-pickItem(ITEMS.find(it => it.name === START.item), true);
+showRulesText();
+pickItem(view.find(it => it.name === START.item), true);
 els.cur.value = START.cur; els.want.value = START.want; els.tried.value = START.tried; els.idols.value = START.idols;
 document.querySelector(`input[name="rule"][value="${START.rule}"]`).checked = true;
 render();
